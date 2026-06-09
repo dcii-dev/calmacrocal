@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Calculate your BMR, TDEE, and daily macro targets instantly. Powered by the Mifflin-St Jeor and Harris-Benedict formulas with discipline-specific macro splits for strength, endurance, cutting, and bulking.">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="Macro Calculator - BMR, TDEE &amp; Daily Macro Targets">
+  <meta property="og:description"
+    content="Get your caloric baseline and macro targets in seconds. No email required. Supports strength, endurance, fat loss, and muscle-building goals.">
+  <meta property="og:image" content="https://calmarcocal.com/images/opengraph.png">
+  <meta property="og:url" content="https://calmarcocal.com/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Macro Calculator - BMR, TDEE &amp; Daily Macro Targets">
+  <meta name="twitter:description"
+    content="Calculate your caloric baseline and discipline-specific macros instantly. No sign-up, no subscription.">
+  <meta name="twitter:image" content="https://calmarcocal.com/images/opengraph.png">
+  <link rel="canonical" href="https://calmarcocal.com/">
+  <title>Macro Calculator - BMR, TDEE &amp; Daily Macro Targets | CalMacroCal</title>
+  <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/ads.css">
+  <!-- Apply saved theme before paint to prevent flash of wrong theme -->
+  <script>
+    (function () {
+      const t = localStorage.getItem("calmarcocal-theme");
+      if (t === "dark" || t === "light") {
+        document.documentElement.setAttribute("data-theme", t);
+      } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    })();
+  </script>
+</head>
+
+<body>
+
+  <!-- SKIP NAVIGATION -->
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <!-- HEADER -->
+  <header class="site-header" role="banner">
+    <div class="site-header__inner">
+      <a href="/" class="site-header__logo" aria-label="CalMacroCal home">
+        <svg class="site-header__logo-icon" width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+          <!-- Circle background -->
+          <circle cx="14" cy="14" r="13.5" fill="currentColor" opacity="0.12" stroke="currentColor" stroke-width="1" opacity="0.3" />
+          <!-- Calculator body -->
+          <rect x="8" y="6" width="12" height="16" rx="1.5" stroke="currentColor" stroke-width="1.4" />
+          <!-- Display strip -->
+          <rect x="9.5" y="7.5" width="9" height="3.5" rx="0.75" fill="currentColor" opacity="0.25" />
+          <!-- Button row 1 -->
+          <rect x="9.5" y="13" width="2.5" height="2" rx="0.5" fill="currentColor" opacity="0.5" />
+          <rect x="12.75" y="13" width="2.5" height="2" rx="0.5" fill="currentColor" opacity="0.5" />
+          <rect x="16" y="13" width="2.5" height="2" rx="0.5" fill="currentColor" opacity="0.5" />
+          <!-- Button row 2 -->
+          <rect x="9.5" y="16" width="2.5" height="2" rx="0.5" fill="currentColor" opacity="0.5" />
+          <rect x="12.75" y="16" width="2.5" height="2" rx="0.5" fill="currentColor" opacity="0.5" />
+          <rect x="16" y="16" width="2.5" height="2" rx="0.5" fill="currentColor" opacity="0.5" />
+          <!-- Button row 3 (bottom — wider enter key) -->
+          <rect x="9.5" y="19" width="2.5" height="2" rx="0.5" fill="currentColor" opacity="0.5" />
+          <rect x="12.75" y="19" width="5.75" height="2" rx="0.5" fill="currentColor" opacity="0.75" />
+        </svg>
+        <span class="site-header__logo-text">CalMacroCal</span>
+      </a>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to dark mode"
+        aria-pressed="false">
+        <span class="theme-toggle__icon theme-toggle__icon--light" aria-hidden="true">&#9788;</span>
+        <span class="theme-toggle__icon theme-toggle__icon--dark" aria-hidden="true">&#9790;</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- AD LEADERBOARD TOP -->
+  <div class="ad-slot ad-slot--leaderboard" aria-hidden="true">
+    <span class="ad-slot__label">Advertisement</span>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main class="site-main" id="main-content">
+
+    <!-- TOOL SECTION -->
+    <section class="tool-section" aria-labelledby="tool-heading">
+      <div class="tool-section__inner">
+
+        <h1 class="tool-section__title" id="tool-heading">Caloric Baseline &amp; Macro Calculator</h1>
+        <p class="tool-section__description">
+          Enter your body metrics, activity level, and training goal to get your
+          BMR, TDEE, and discipline-specific daily macro targets. No account required.
+        </p>
+
+        <!-- TOOL FORM -->
+        <form class="tool-form" id="macro-form" aria-label="Macro calculator inputs" novalidate>
+
+          <!-- SECTION: BODY METRICS -->
+          <fieldset class="form-section">
+            <legend class="form-section__legend">Body Metrics</legend>
+
+            <!-- Unit Toggle -->
+            <div class="unit-toggle" role="group" aria-label="Unit system">
+              <label class="unit-toggle__option">
+                <input class="unit-toggle__input" type="radio" name="unit" id="unit-imperial" value="imperial"
+                  checked>
+                <span class="unit-toggle__label">Imperial</span>
+              </label>
+              <label class="unit-toggle__option">
+                <input class="unit-toggle__input" type="radio" name="unit" id="unit-metric" value="metric">
+                <span class="unit-toggle__label">Metric</span>
+              </label>
+            </div>
+
+            <div class="tool-form__grid">
+
+              <!-- Biological Sex -->
+              <div class="form-group">
+                <span class="form-group__label form-group__label--required" id="sex-label">Biological Sex</span>
+                <div class="sex-toggle" role="group" aria-labelledby="sex-label">
+                  <label class="sex-toggle__option">
+                    <input class="sex-toggle__input" type="radio" name="sex" id="sex-male" value="male" checked>
+                    <span class="sex-toggle__label">Male</span>
+                  </label>
+                  <label class="sex-toggle__option">
+                    <input class="sex-toggle__input" type="radio" name="sex" id="sex-female" value="female">
+                    <span class="sex-toggle__label">Female</span>
+                  </label>
+                </div>
+                <span class="form-group__hint">Required for accurate BMR formula selection.</span>
+              </div>
+
+              <!-- Age -->
+              <div class="form-group">
+                <label class="form-group__label form-group__label--required" for="age">Age</label>
+                <div class="form-group__input-wrap">
+                  <input class="form-group__input" type="number" id="age" value="30" min="15" max="100" step="1"
+                    aria-required="true" aria-describedby="age-hint">
+                  <span class="form-group__suffix">yrs</span>
+                </div>
+                <span class="form-group__hint" id="age-hint">Between 15 and 100.</span>
+              </div>
+
+              <!-- Weight (imperial) -->
+              <div class="form-group" id="weight-imperial">
+                <label class="form-group__label form-group__label--required" for="weight-lbs">Weight</label>
+                <div class="form-group__input-wrap">
+                  <input class="form-group__input" type="number" id="weight-lbs" value="170" min="50" max="1000"
+                    step="1" aria-required="true" aria-describedby="weight-lbs-hint">
+                  <span class="form-group__suffix">lbs</span>
+                </div>
+                <span class="form-group__hint" id="weight-lbs-hint">Your current body weight in pounds.</span>
+              </div>
+
+              <!-- Weight (metric) -->
+              <div class="form-group" id="weight-metric" hidden>
+                <label class="form-group__label form-group__label--required" for="weight-kg">Weight</label>
+                <div class="form-group__input-wrap">
+                  <input class="form-group__input" type="number" id="weight-kg" value="77" min="20" max="450" step="1"
+                    aria-describedby="weight-kg-hint">
+                  <span class="form-group__suffix">kg</span>
+                </div>
+                <span class="form-group__hint" id="weight-kg-hint">Your current body weight in kilograms.</span>
+              </div>
+
+              <!-- Height (imperial) -->
+              <div class="form-group" id="height-imperial">
+                <span class="form-group__label form-group__label--required" id="height-imp-label">Height</span>
+                <div class="height-imperial-inputs" role="group" aria-labelledby="height-imp-label">
+                  <div class="form-group__input-wrap">
+                    <input class="form-group__input" type="number" id="height-ft" value="5" min="3" max="8" step="1"
+                      aria-label="Feet" aria-required="true">
+                    <span class="form-group__suffix">ft</span>
+                  </div>
+                  <div class="form-group__input-wrap">
+                    <input class="form-group__input" type="number" id="height-in" value="10" min="0" max="11" step="1"
+                      aria-label="Inches">
+                    <span class="form-group__suffix">in</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Height (metric) -->
+              <div class="form-group" id="height-metric" hidden>
+                <label class="form-group__label form-group__label--required" for="height-cm">Height</label>
+                <div class="form-group__input-wrap">
+                  <input class="form-group__input" type="number" id="height-cm" value="178" min="100" max="250"
+                    step="1" aria-describedby="height-cm-hint">
+                  <span class="form-group__suffix">cm</span>
+                </div>
+                <span class="form-group__hint" id="height-cm-hint">Your height in centimeters.</span>
+              </div>
+
+              <!-- Body Fat % (optional) -->
+              <div class="form-group">
+                <label class="form-group__label" for="body-fat">Body Fat % <span class="form-group__optional">(optional)</span></label>
+                <div class="form-group__input-wrap">
+                  <input class="form-group__input" type="number" id="body-fat" min="3" max="70" step="0.5"
+                    placeholder="e.g. 18" aria-describedby="body-fat-hint">
+                  <span class="form-group__suffix">%</span>
+                </div>
+                <span class="form-group__hint" id="body-fat-hint">Optional. Enables the Katch-McArdle formula for a more precise BMR.</span>
+              </div>
+
+            </div>
+          </fieldset>
+
+          <!-- SECTION: ACTIVITY LEVEL -->
+          <fieldset class="form-section">
+            <legend class="form-section__legend">Activity Level</legend>
+            <div class="tool-form__grid tool-form__grid--single">
+              <div class="form-group">
+                <label class="form-group__label form-group__label--required" for="activity">
+                  How active are you?
+                </label>
+                <select class="form-group__select" id="activity" aria-describedby="activity-hint">
+                  <option value="sedentary">Sedentary (desk job, little or no exercise)</option>
+                  <option value="light">Lightly Active (1-3 workouts per week)</option>
+                  <option value="moderate" selected>Moderately Active (3-5 workouts per week)</option>
+                  <option value="active">Very Active (6-7 intense workouts per week)</option>
+                  <option value="extra">Extra Active (twice daily or a physically demanding job)</option>
+                </select>
+                <span class="form-group__hint" id="activity-hint">Be conservative. Overestimating activity is the
+                  most common reason caloric calculations miss.</span>
+              </div>
+            </div>
+          </fieldset>
+
+          <!-- SECTION: TRAINING DISCIPLINE -->
+          <fieldset class="form-section">
+            <legend class="form-section__legend">Training Discipline</legend>
+            <div class="tool-form__grid tool-form__grid--single">
+              <div class="form-group">
+                <label class="form-group__label form-group__label--required" for="discipline">
+                  Primary training goal
+                </label>
+                <select class="form-group__select" id="discipline" aria-describedby="discipline-hint">
+                  <option value="general">General Fitness (maintenance)</option>
+                  <option value="strength">Strength / Powerlifting</option>
+                  <option value="endurance">Endurance / Running</option>
+                  <option value="cut">Weight Cut / Fat Loss</option>
+                  <option value="bulk">Muscle Building / Bulk</option>
+                </select>
+                <span class="form-group__hint" id="discipline-hint">Adjusts your caloric target and macro
+                  split.</span>
+              </div>
+            </div>
+          </fieldset>
+
+          <!-- SECTION: GOAL & PREFERENCES -->
+          <fieldset class="form-section">
+            <legend class="form-section__legend">Goal &amp; Preferences</legend>
+            <div class="tool-form__grid">
+
+              <!-- Goal Weight (imperial) -->
+              <div class="form-group" id="goal-weight-imperial">
+                <label class="form-group__label" for="goal-weight-lbs">Goal Weight <span class="form-group__optional">(optional)</span></label>
+                <div class="form-group__input-wrap">
+                  <input class="form-group__input" type="number" id="goal-weight-lbs" min="50" max="1000"
+                    step="1" placeholder="e.g. 155" aria-describedby="goal-weight-hint">
+                  <span class="form-group__suffix">lbs</span>
+                </div>
+                <span class="form-group__hint" id="goal-weight-hint">Shows your estimated timeline to reach this weight.</span>
+              </div>
+
+              <!-- Goal Weight (metric, hidden by default) -->
+              <div class="form-group" id="goal-weight-metric" hidden>
+                <label class="form-group__label" for="goal-weight-kg">Goal Weight <span class="form-group__optional">(optional)</span></label>
+                <div class="form-group__input-wrap">
+                  <input class="form-group__input" type="number" id="goal-weight-kg" min="20" max="450"
+                    step="1" placeholder="e.g. 70">
+                  <span class="form-group__suffix">kg</span>
+                </div>
+              </div>
+
+              <!-- Meals per day -->
+              <div class="form-group">
+                <label class="form-group__label" for="meals-per-day">Meals Per Day</label>
+                <select class="form-group__select" id="meals-per-day" aria-describedby="meals-hint">
+                  <option value="2">2 meals</option>
+                  <option value="3" selected>3 meals</option>
+                  <option value="4">4 meals</option>
+                  <option value="5">5 meals</option>
+                  <option value="6">6 meals</option>
+                </select>
+                <span class="form-group__hint" id="meals-hint">Divides your daily macros evenly per meal.</span>
+              </div>
+
+            </div>
+          </fieldset>
+
+        </form>
+
+        <!-- RESULTS -->
+        <div class="results" aria-live="polite" aria-label="Caloric and TDEE results">
+          <div class="results__card results__card--calories">
+            <span class="results__card-label">Daily Target</span>
+            <output class="results__card-value" id="result-calories"
+              for="sex-male sex-female age weight-lbs weight-kg height-ft height-in height-cm activity discipline">
+              0<span class="results__card-unit">kcal</span>
+            </output>
+            <p class="results__card-desc">Caloric target adjusted for your training discipline.</p>
+          </div>
+          <div class="results__card results__card--tdee">
+            <span class="results__card-label">TDEE</span>
+            <output class="results__card-value" id="result-tdee"
+              for="sex-male sex-female age weight-lbs weight-kg height-ft height-in height-cm activity">
+              0<span class="results__card-unit">kcal</span>
+            </output>
+            <p class="results__card-desc">Total daily energy expenditure at maintenance.</p>
+          </div>
+        </div>
+
+        <!-- GOAL TIMELINE (hidden until goal weight is entered) -->
+        <div class="goal-timeline" id="goal-timeline-card" hidden aria-live="polite">
+          <span class="goal-timeline__label">Est. Timeline</span>
+          <span class="goal-timeline__value" id="goal-timeline-value">--</span>
+          <p class="goal-timeline__desc" id="goal-timeline-desc"></p>
+        </div>
+
+        <!-- MACROS -->
+        <div class="macros-wrapper" aria-live="polite" aria-label="Daily macro targets">
+
+          <!-- Training Days -->
+          <div class="macro-group">
+            <h3 class="macro-group__heading">Training Days</h3>
+            <div class="macros">
+              <div class="macro-card macro-card--protein">
+                <span class="macro-card__label">Protein</span>
+                <output class="macro-card__value" id="result-protein"
+                  for="sex-male sex-female age weight-lbs weight-kg height-ft height-in height-cm body-fat activity discipline">
+                  0<span class="macro-card__unit">g</span>
+                </output>
+                <span class="macro-card__pct" id="result-protein-pct">0%</span>
+              </div>
+              <div class="macro-card macro-card--carbs">
+                <span class="macro-card__label">Carbs</span>
+                <output class="macro-card__value" id="result-carbs"
+                  for="sex-male sex-female age weight-lbs weight-kg height-ft height-in height-cm body-fat activity discipline">
+                  0<span class="macro-card__unit">g</span>
+                </output>
+                <span class="macro-card__pct" id="result-carbs-pct">0%</span>
+              </div>
+              <div class="macro-card macro-card--fat">
+                <span class="macro-card__label">Fat</span>
+                <output class="macro-card__value" id="result-fat"
+                  for="sex-male sex-female age weight-lbs weight-kg height-ft height-in height-cm body-fat activity discipline">
+                  0<span class="macro-card__unit">g</span>
+                </output>
+                <span class="macro-card__pct" id="result-fat-pct">0%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Rest Days -->
+          <div class="macro-group macro-group--rest">
+            <h3 class="macro-group__heading">Rest Days</h3>
+            <div class="macros">
+              <div class="macro-card macro-card--protein">
+                <span class="macro-card__label">Protein</span>
+                <output class="macro-card__value" id="rest-protein"
+                  for="sex-male sex-female age weight-lbs weight-kg height-ft height-in height-cm body-fat activity discipline">
+                  0<span class="macro-card__unit">g</span>
+                </output>
+                <span class="macro-card__pct" id="rest-protein-pct">0%</span>
+              </div>
+              <div class="macro-card macro-card--carbs">
+                <span class="macro-card__label">Carbs</span>
+                <output class="macro-card__value" id="rest-carbs"
+                  for="sex-male sex-female age weight-lbs weight-kg height-ft height-in height-cm body-fat activity discipline">
+                  0<span class="macro-card__unit">g</span>
+                </output>
+                <span class="macro-card__pct" id="rest-carbs-pct">0%</span>
+              </div>
+              <div class="macro-card macro-card--fat">
+                <span class="macro-card__label">Fat</span>
+                <output class="macro-card__value" id="rest-fat"
+                  for="sex-male sex-female age weight-lbs weight-kg height-ft height-in height-cm body-fat activity discipline">
+                  0<span class="macro-card__unit">g</span>
+                </output>
+                <span class="macro-card__pct" id="rest-fat-pct">0%</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- PER MEAL BREAKDOWN -->
+        <div class="per-meal" aria-live="polite">
+          <h3 class="per-meal__heading" id="meal-label">Per Meal (3 meals)</h3>
+          <div class="macros">
+            <div class="macro-card macro-card--protein">
+              <span class="macro-card__label">Protein</span>
+              <output class="macro-card__value" id="meal-protein">0<span class="macro-card__unit">g</span></output>
+            </div>
+            <div class="macro-card macro-card--carbs">
+              <span class="macro-card__label">Carbs</span>
+              <output class="macro-card__value" id="meal-carbs">0<span class="macro-card__unit">g</span></output>
+            </div>
+            <div class="macro-card macro-card--fat">
+              <span class="macro-card__label">Fat</span>
+              <output class="macro-card__value" id="meal-fat">0<span class="macro-card__unit">g</span></output>
+            </div>
+          </div>
+        </div>
+
+        <!-- EXTRAS: FIBER + WATER -->
+        <div class="extras" aria-live="polite" aria-label="Fiber and water targets">
+          <div class="extra-card">
+            <span class="extra-card__label">Daily Fiber</span>
+            <span class="extra-card__value" id="result-fiber">0g</span>
+            <span class="extra-card__hint">14g per 1,000 kcal (DRI standard)</span>
+          </div>
+          <div class="extra-card">
+            <span class="extra-card__label">Daily Water</span>
+            <span class="extra-card__value" id="result-water-oz">0 oz</span>
+            <span class="extra-card__hint" id="result-water-l">0 L</span>
+          </div>
+        </div>
+
+        <!-- COPY BUTTON -->
+        <button class="copy-btn" id="copy-btn" type="button" aria-label="Copy all results to clipboard">
+          Copy Results
+        </button>
+
+        <!-- BREAKDOWN -->
+        <details class="breakdown" id="breakdown-details">
+          <summary class="breakdown__summary">Show calculation breakdown</summary>
+          <div class="breakdown__body">
+            <dl class="breakdown__list">
+              <div class="breakdown__row">
+                <dt class="breakdown__term">BMR (Mifflin-St Jeor)</dt>
+                <dd class="breakdown__detail" id="bd-mifflin">0 kcal</dd>
+              </div>
+              <div class="breakdown__row">
+                <dt class="breakdown__term">BMR (Harris-Benedict)</dt>
+                <dd class="breakdown__detail" id="bd-harris">0 kcal</dd>
+              </div>
+              <div class="breakdown__row">
+                <dt class="breakdown__term">BMR (Katch-McArdle)</dt>
+                <dd class="breakdown__detail" id="bd-katch">N/A — enter body fat % to enable</dd>
+              </div>
+              <div class="breakdown__row">
+                <dt class="breakdown__term">Formula used</dt>
+                <dd class="breakdown__detail" id="bd-formula">Mifflin-St Jeor</dd>
+              </div>
+              <div class="breakdown__row">
+                <dt class="breakdown__term">Activity multiplier</dt>
+                <dd class="breakdown__detail" id="bd-multiplier">x1.55</dd>
+              </div>
+              <div class="breakdown__row">
+                <dt class="breakdown__term">TDEE (maintenance)</dt>
+                <dd class="breakdown__detail" id="bd-tdee">0 kcal</dd>
+              </div>
+              <div class="breakdown__row">
+                <dt class="breakdown__term">Discipline adjustment</dt>
+                <dd class="breakdown__detail" id="bd-discipline">+0%</dd>
+              </div>
+              <div class="breakdown__row">
+                <dt class="breakdown__term">Daily caloric target</dt>
+                <dd class="breakdown__detail" id="bd-target">0 kcal</dd>
+              </div>
+            </dl>
+          </div>
+        </details>
+
+      </div>
+    </section>
+
+    <!-- AD INLINE MID PAGE -->
+    <div class="ad-slot ad-slot--inline" aria-hidden="true">
+      <span class="ad-slot__label">Advertisement</span>
+    </div>
+
+    <!-- CONTENT + SIDEBAR LAYOUT -->
+    <div class="content-layout">
+
+      <!-- MAIN COPY -->
+      <section class="content-section" aria-labelledby="content-heading">
+        <div class="content-section__body">
+
+          <h2 id="content-heading">Understanding Your Basal Metabolic Rate</h2>
+          <p>
+            Your Basal Metabolic Rate is the number of calories your body burns at complete rest to
+            sustain basic physiological functions: breathing, circulation, thermoregulation, and
+            cellular repair. BMR typically accounts for 60-75% of your total daily energy expenditure,
+            making it the most important variable in any nutrition plan. Get it wrong and every caloric
+            target downstream is miscalibrated from the start.
+          </p>
+          <p>
+            BMR is determined by four inputs: biological sex, age, body weight, and height. Sex and
+            age affect hormonal and metabolic rates. Heavier and taller individuals have more metabolically
+            active tissue and therefore higher caloric baselines. BMR decreases roughly 1-2% per decade
+            after age 30, which is why caloric targets that worked at 25 often need adjustment by 35.
+          </p>
+
+          <h2>Mifflin-St Jeor vs. Harris-Benedict: Which Formula Is More Accurate?</h2>
+          <p>
+            The Harris-Benedict equations were developed in 1919 and revised in 1984. They were the
+            clinical standard for decades. The Mifflin-St Jeor formula, published in 1990, was developed
+            from a broader and more diverse population sample. A 2005 comparison published in the
+            Journal of the American Dietetic Association found Mifflin-St Jeor predicted resting energy
+            expenditure within 10% of measured values for approximately 82% of subjects, compared to
+            around 70% for the Harris-Benedict revision. For most users, the Mifflin formula produces a
+            slightly lower, more conservative BMR estimate.
+          </p>
+          <p>
+            Harris-Benedict tends to overestimate BMR by 5-10% in individuals with higher body fat
+            percentages, because it does not differentiate between lean mass and fat mass. Mifflin-St Jeor
+            has the same limitation but performs better on average across weight categories. If you have a
+            measured body fat percentage, enter it in the Body Fat % field above to enable the
+            <strong>Katch-McArdle</strong> formula, which calculates BMR from lean body mass directly and
+            is more accurate for anyone outside a typical body composition range.
+          </p>
+          <p>Mifflin-St Jeor formula:</p>
+          <code>BMR (male) = (10 &times; kg) + (6.25 &times; cm) &minus; (5 &times; age) + 5</code><br>
+          <code>BMR (female) = (10 &times; kg) + (6.25 &times; cm) &minus; (5 &times; age) &minus; 161</code>
+          <p>Katch-McArdle formula (requires body fat %):</p>
+          <code>BMR = 370 + (21.6 &times; lean mass in kg)</code>
+
+          <h2>Activity Multipliers: The Most Commonly Misjudged Input</h2>
+          <p>
+            Your Total Daily Energy Expenditure is your BMR multiplied by an activity factor that
+            accounts for all movement throughout the day. Overestimating your activity level is the
+            single most common reason nutrition plans miss their caloric targets. The "very active"
+            multiplier (1.725) applies to athletes training 6-7 days per week with high-intensity
+            sessions. Most people who exercise 3-5 times per week fall squarely in the "moderately
+            active" bracket (1.55). Choosing "very active" when "moderately active" is accurate
+            inflates your TDEE by roughly 11%, which can easily mask a caloric deficit entirely.
+          </p>
+
+          <table class="reference-table" aria-label="Activity level multipliers reference">
+            <thead>
+              <tr>
+                <th scope="col">Activity Level</th>
+                <th scope="col">Multiplier</th>
+                <th scope="col">Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Sedentary</td>
+                <td>1.20</td>
+                <td>Desk job, little or no deliberate exercise</td>
+              </tr>
+              <tr>
+                <td>Lightly Active</td>
+                <td>1.375</td>
+                <td>Light exercise 1-3 days per week</td>
+              </tr>
+              <tr>
+                <td>Moderately Active</td>
+                <td>1.55</td>
+                <td>Moderate exercise 3-5 days per week</td>
+              </tr>
+              <tr>
+                <td>Very Active</td>
+                <td>1.725</td>
+                <td>Hard training 6-7 days per week</td>
+              </tr>
+              <tr>
+                <td>Extra Active</td>
+                <td>1.90</td>
+                <td>Twice-daily training or a physically demanding job</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2>Discipline-Specific Macro Architecture</h2>
+          <p>
+            Calories determine body weight over time. Macronutrient ratios determine body composition,
+            training performance, and recovery quality. Each gram of protein delivers 4 kcal. Each gram
+            of carbohydrate delivers 4 kcal. Each gram of fat delivers 9 kcal. Shifting the ratio between
+            these three has measurable effects depending on your training discipline.
+          </p>
+
+          <h3>General Fitness (Maintenance)</h3>
+          <p>
+            A balanced starting point: 30% protein, 45% carbohydrates, 25% fat. No caloric adjustment
+            is applied. This is appropriate for people training for general health, body recomposition at
+            maintenance calories, or those new to structured nutrition.
+          </p>
+
+          <h3>Strength and Powerlifting</h3>
+          <p>
+            A 5% caloric surplus supports progressive overload and muscle protein synthesis. The macro
+            split shifts to 35% protein, 40% carbohydrates, and 25% fat. Higher protein supports muscle
+            repair after high-load sessions. Carbohydrate intake is slightly reduced to accommodate the
+            protein increase while still fueling glycolytic energy demands.
+          </p>
+
+          <h3>Endurance and Running</h3>
+          <p>
+            Aerobic training at sustained intensities relies heavily on glycogen stores. A 5% caloric
+            surplus combined with a carbohydrate-dominant split (25% protein / 55% carbs / 20% fat)
+            ensures glycogen availability during long training blocks and reduces glycogen depletion
+            during multi-session weeks. Protein remains sufficient for connective tissue repair without
+            crowding out the carbohydrate intake endurance athletes require.
+          </p>
+
+          <h3>Weight Cut and Fat Loss</h3>
+          <p>
+            A 20% caloric deficit is applied. Protein is elevated to 40% of total intake to preserve
+            lean muscle mass during a deficit, where muscle catabolism risk increases. Carbohydrates
+            are reduced to 35% and fat held at 25%. A deficit beyond 20% accelerates muscle loss and
+            hormonal disruption without proportional fat-loss benefit. Staying at or above 1g of protein
+            per pound of body weight is a practical floor target during a cut.
+          </p>
+
+          <h3>Muscle Building and Bulk</h3>
+          <p>
+            A 12% caloric surplus supports anabolic muscle protein synthesis without excessive fat
+            accumulation. The split is 35% protein, 45% carbohydrates, and 20% fat. Surplus calories
+            above approximately 15% provide diminishing returns in muscle gain while accelerating fat
+            storage. A lean bulk at 10-15% surplus with consistent resistance training is the most
+            efficient strategy for natural muscle development.
+          </p>
+
+          <h2>Training Day vs. Rest Day Macro Cycling</h2>
+          <p>
+            Your body's fuel demands are not uniform across a week. On training days, glycogen availability
+            directly affects performance and recovery. On rest days, the metabolic demand for carbohydrates
+            drops and fat oxidation increases. Macro cycling adjusts the ratio of carbohydrates and fat
+            between training and rest days while keeping total weekly calories consistent.
+          </p>
+          <p>
+            This calculator outputs separate macro targets for training days and rest days. The total
+            caloric intake is the same on both days. What changes is the source: carbohydrates shift
+            higher on training days to fuel glycolytic work, and fat shifts higher on rest days when
+            glycogen replenishment is lower priority. Protein stays constant across both because muscle
+            protein synthesis is not meaningfully affected by training day timing.
+          </p>
+          <p>
+            The practical benefit is that rest-day carbohydrate reduction tends to improve insulin
+            sensitivity over time and allows higher-carbohydrate training days to remain effective.
+            The effect is more pronounced for strength and endurance athletes who have significant
+            glycogen depletion during sessions, and less relevant for sedentary or lightly active individuals.
+          </p>
+
+          <h2>Caloric Pacing Across Training Cycles</h2>
+          <p>
+            Most effective programs periodize both training volume and caloric intake across mesocycles.
+            A common approach is alternating 8-12 week building phases (slight surplus) with 6-8 week
+            cutting phases (controlled deficit). Attempting to simultaneously maximize muscle gain and fat
+            loss, referred to as body recomposition, is achievable for beginners and detrained individuals
+            but produces slower results than dedicated phases for intermediate and advanced lifters.
+          </p>
+          <p>
+            Recalculate your targets every 4-6 weeks during a cut or bulk. As body weight changes,
+            both your BMR and TDEE change proportionally. Failing to adjust means your caloric target
+            drifts further from your actual needs over time, which is why fat-loss plateaus typically
+            occur after 6-8 weeks without recalculation.
+          </p>
+
+        </div>
+      </section>
+
+      <!-- SIDEBAR AD -->
+      <aside class="content-sidebar" aria-label="Advertisements">
+        <div class="ad-slot ad-slot--sidebar" aria-hidden="true">
+          <span class="ad-slot__label">Advertisement</span>
+        </div>
+      </aside>
+
+    </div>
+
+    <!-- AD MEDIUM RECTANGLE -->
+    <div class="ad-slot ad-slot--rectangle" aria-hidden="true">
+      <span class="ad-slot__label">Advertisement</span>
+    </div>
+
+    <!-- FAQ SECTION -->
+    <section class="faq-section" aria-labelledby="faq-heading">
+      <div class="faq-section__inner">
+        <h2 class="faq-section__title" id="faq-heading">Frequently Asked Questions</h2>
+        <div class="faq__accordion" id="faq-accordion" aria-label="FAQ accordion">
+          <!-- Populated by js/content.js from data/faq.json -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="site-footer__inner">
+      <p class="site-footer__copy">
+        &copy; <span id="footer-year"></span> CalMacroCal. All rights reserved.
+      </p>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+  <script src="js/content.js"></script>
+
+</body>
+
+</html>
