@@ -5,18 +5,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description"
-    content="Calculate your BMR, TDEE, and daily macro targets instantly. Powered by the Mifflin-St Jeor and Harris-Benedict formulas with discipline-specific macro splits for strength, endurance, cutting, and bulking.">
+    content="Calculate your BMR, TDEE, daily macro targets, body fat % (Navy Method), and heart rate training zones. Powered by Mifflin-St Jeor, Katch-McArdle, and Karvonen formulas with discipline-specific macro splits for strength, endurance, cutting, and bulking.">
   <meta name="robots" content="index, follow">
   <meta property="og:title" content="Macro Calculator - BMR, TDEE &amp; Daily Macro Targets">
   <meta property="og:description"
-    content="Get your caloric baseline and macro targets in seconds. No email required. Supports strength, endurance, fat loss, and muscle-building goals.">
+    content="Get your caloric baseline, macro targets, body fat estimate, and heart rate training zones in seconds. No email required. Supports strength, endurance, fat loss, and muscle-building goals.">
   <meta property="og:image" content="https://calmacrocal.com/images/opengraph.png">
   <meta property="og:url" content="https://calmacrocal.com/">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Macro Calculator - BMR, TDEE &amp; Daily Macro Targets">
   <meta name="twitter:description"
-    content="Calculate your caloric baseline and discipline-specific macros instantly. No sign-up, no subscription.">
+    content="Calculate your caloric baseline, discipline-specific macros, body fat % (Navy Method), and heart rate zones instantly. No sign-up, no subscription.">
   <meta name="twitter:image" content="https://calmacrocal.com/images/opengraph.png">
   <link rel="canonical" href="https://calmacrocal.com/">
   <title>Macro Calculator - BMR, TDEE &amp; Daily Macro Targets | CalMacroCal</title>
@@ -214,6 +214,82 @@
                   precise BMR.</span>
               </div>
 
+              <!-- Navy Method Body Fat Sub-Calculator -->
+              <details class="navy-calc" id="navy-calc">
+                <summary class="navy-calc__summary">Don't know your body fat %? Calculate it with the Navy Method</summary>
+                <div class="navy-calc__body">
+                  <p class="navy-calc__desc">Enter your circumference measurements to estimate body fat % using the U.S. Navy formula. The result will auto-fill the Body Fat % field above.</p>
+                  <div class="navy-calc__grid">
+
+                    <!-- Neck imperial -->
+                    <div class="form-group" id="navy-neck-imperial">
+                      <label class="form-group__label" for="navy-neck-in">Neck</label>
+                      <div class="form-group__input-wrap">
+                        <input class="form-group__input" type="number" id="navy-neck-in" min="8" max="24" step="0.25"
+                          placeholder="e.g. 15">
+                        <span class="form-group__suffix">in</span>
+                      </div>
+                    </div>
+
+                    <!-- Neck metric -->
+                    <div class="form-group" id="navy-neck-metric" hidden>
+                      <label class="form-group__label" for="navy-neck-cm">Neck</label>
+                      <div class="form-group__input-wrap">
+                        <input class="form-group__input" type="number" id="navy-neck-cm" min="20" max="60" step="0.5"
+                          placeholder="e.g. 38">
+                        <span class="form-group__suffix">cm</span>
+                      </div>
+                    </div>
+
+                    <!-- Waist imperial -->
+                    <div class="form-group" id="navy-waist-imperial">
+                      <label class="form-group__label" for="navy-waist-in">Waist</label>
+                      <div class="form-group__input-wrap">
+                        <input class="form-group__input" type="number" id="navy-waist-in" min="20" max="70" step="0.25"
+                          placeholder="e.g. 32">
+                        <span class="form-group__suffix">in</span>
+                      </div>
+                    </div>
+
+                    <!-- Waist metric -->
+                    <div class="form-group" id="navy-waist-metric" hidden>
+                      <label class="form-group__label" for="navy-waist-cm">Waist</label>
+                      <div class="form-group__input-wrap">
+                        <input class="form-group__input" type="number" id="navy-waist-cm" min="50" max="180" step="0.5"
+                          placeholder="e.g. 81">
+                        <span class="form-group__suffix">cm</span>
+                      </div>
+                    </div>
+
+                    <!-- Hip imperial (female only, hidden by default) -->
+                    <div class="form-group" id="navy-hip-imperial" hidden>
+                      <label class="form-group__label" for="navy-hip-in">Hip <span class="form-group__optional">(female)</span></label>
+                      <div class="form-group__input-wrap">
+                        <input class="form-group__input" type="number" id="navy-hip-in" min="25" max="75" step="0.25"
+                          placeholder="e.g. 38">
+                        <span class="form-group__suffix">in</span>
+                      </div>
+                    </div>
+
+                    <!-- Hip metric (female only, hidden by default) -->
+                    <div class="form-group" id="navy-hip-metric" hidden>
+                      <label class="form-group__label" for="navy-hip-cm">Hip <span class="form-group__optional">(female)</span></label>
+                      <div class="form-group__input-wrap">
+                        <input class="form-group__input" type="number" id="navy-hip-cm" min="60" max="190" step="0.5"
+                          placeholder="e.g. 97">
+                        <span class="form-group__suffix">cm</span>
+                      </div>
+                    </div>
+
+                  </div>
+                  <div class="navy-calc__footer">
+                    <button class="navy-calc__btn" id="navy-calc-btn" type="button">Calculate Body Fat %</button>
+                    <span class="navy-calc__result" id="navy-calc-result" hidden></span>
+                  </div>
+                  <p class="navy-calc__hint">Measure neck at the narrowest point. For males, measure waist at the narrowest point. For females, measure waist at the navel and hip at the widest point.</p>
+                </div>
+              </details>
+
             </div>
           </fieldset>
 
@@ -235,6 +311,21 @@
                 <span class="form-group__hint" id="activity-hint">Be conservative. Overestimating activity is the
                   most common reason caloric calculations miss.</span>
               </div>
+
+              <!-- Resting Heart Rate (optional) -->
+              <div class="form-group">
+                <label class="form-group__label" for="resting-hr">Resting Heart Rate <span
+                    class="form-group__optional">(optional)</span></label>
+                <div class="form-group__input-wrap">
+                  <input class="form-group__input" type="number" id="resting-hr" min="30" max="120" step="1"
+                    placeholder="" aria-describedby="resting-hr-hint">
+                  <span class="form-group__suffix">bpm</span>
+                </div>
+                <span class="form-group__hint" id="resting-hr-hint">Optional. Enables the Karvonen method for more
+                  personalized training zones. Measure first thing in the morning before getting up, or check your
+                  fitness tracker.</span>
+              </div>
+
             </div>
           </fieldset>
 
@@ -481,6 +572,48 @@
           </div>
         </div>
 
+        <!-- HEART RATE ZONES -->
+        <div class="hr-zones" id="hr-zones-container" aria-live="polite" aria-label="Heart rate training zones">
+          <h3 class="hr-zones__heading">Heart Rate Training Zones</h3>
+          <p class="hr-zones__desc">Based on estimated max HR of <strong><span id="hr-max-display">190</span> bpm</strong> (220 minus age). <span class="hr-zones__karvonen-note" id="hr-karvonen-note" hidden>Karvonen values use your resting HR for a more personalized range.</span></p>
+          <div class="hr-zones__header" role="row">
+            <span role="columnheader">Zone</span>
+            <span role="columnheader">Intensity</span>
+            <span role="columnheader">Simple</span>
+            <span role="columnheader" id="hr-karvonen-col" hidden>Karvonen</span>
+          </div>
+          <div class="hr-zones__row hr-zones__row--z1" role="row">
+            <span class="hr-zones__zone-label" role="cell">Zone 1</span>
+            <span class="hr-zones__intensity" role="cell">Active Recovery <span class="hr-zones__pct">50-60%</span></span>
+            <span class="hr-zones__bpm" id="hz1-simple" role="cell"></span>
+            <span class="hr-zones__bpm" id="hz1-karvonen" role="cell" hidden></span>
+          </div>
+          <div class="hr-zones__row hr-zones__row--z2" role="row">
+            <span class="hr-zones__zone-label" role="cell">Zone 2</span>
+            <span class="hr-zones__intensity" role="cell">Endurance / Fat Burn <span class="hr-zones__pct">60-70%</span></span>
+            <span class="hr-zones__bpm" id="hz2-simple" role="cell"></span>
+            <span class="hr-zones__bpm" id="hz2-karvonen" role="cell" hidden></span>
+          </div>
+          <div class="hr-zones__row hr-zones__row--z3" role="row">
+            <span class="hr-zones__zone-label" role="cell">Zone 3</span>
+            <span class="hr-zones__intensity" role="cell">Aerobic <span class="hr-zones__pct">70-80%</span></span>
+            <span class="hr-zones__bpm" id="hz3-simple" role="cell"></span>
+            <span class="hr-zones__bpm" id="hz3-karvonen" role="cell" hidden></span>
+          </div>
+          <div class="hr-zones__row hr-zones__row--z4" role="row">
+            <span class="hr-zones__zone-label" role="cell">Zone 4</span>
+            <span class="hr-zones__intensity" role="cell">Lactate Threshold <span class="hr-zones__pct">80-90%</span></span>
+            <span class="hr-zones__bpm" id="hz4-simple" role="cell"></span>
+            <span class="hr-zones__bpm" id="hz4-karvonen" role="cell" hidden></span>
+          </div>
+          <div class="hr-zones__row hr-zones__row--z5" role="row">
+            <span class="hr-zones__zone-label" role="cell">Zone 5</span>
+            <span class="hr-zones__intensity" role="cell">VO2 Max <span class="hr-zones__pct">90-100%</span></span>
+            <span class="hr-zones__bpm" id="hz5-simple" role="cell"></span>
+            <span class="hr-zones__bpm" id="hz5-karvonen" role="cell" hidden></span>
+          </div>
+        </div>
+
         <!-- COPY BUTTON -->
         <button class="copy-btn" id="copy-btn" type="button" aria-label="Copy all results to clipboard">
           Copy Results
@@ -717,6 +850,94 @@
             both your BMR and TDEE change proportionally. Failing to adjust means your caloric target
             drifts further from your actual needs over time, which is why fat-loss plateaus typically
             occur after 6-8 weeks without recalculation.
+          </p>
+
+          <h2>Estimating Body Fat % with the Navy Method</h2>
+          <p>
+            Most people do not have access to a DEXA scan or hydrostatic weighing. The U.S. Navy
+            circumference method offers a field-accurate alternative using only a tape measure. For
+            males, it requires three measurements: neck circumference at the narrowest point, waist
+            circumference at the narrowest point, and height. For females, hip circumference at the
+            widest point replaces the simpler male formula.
+          </p>
+          <p>
+            The formula applies a logarithmic regression against a large military population sample.
+            Published research comparing it to hydrostatic weighing found mean errors of approximately
+            3-4 percentage points, which is sufficient accuracy to meaningfully improve a BMR calculation
+            compared to using no body fat input at all. Use the Navy calculator embedded in the Body
+            Fat % field above to estimate your value and automatically enable the Katch-McArdle formula.
+          </p>
+          <p>Navy formula (male):</p>
+          <code>BF% = 495 / (1.0324 &minus; 0.19077 &times; log10(waist &minus; neck) + 0.15456 &times; log10(height)) &minus; 450</code>
+          <p>Navy formula (female):</p>
+          <code>BF% = 495 / (1.29579 &minus; 0.35004 &times; log10(waist + hip &minus; neck) + 0.221 &times; log10(height)) &minus; 450</code>
+          <p>
+            All measurements are in inches for the standard formula. Measurement accuracy matters:
+            a half-inch error in waist circumference translates to roughly 1-2 percentage points of
+            error in the body fat estimate. Measure at the same time each day, preferably before eating.
+          </p>
+
+          <h2>Heart Rate Training Zones Explained</h2>
+          <p>
+            Training zones divide your cardiovascular output into five intensity bands, each targeting
+            a different physiological adaptation. The simplest method uses a percentage of your estimated
+            maximum heart rate, where max HR is calculated as 220 minus your age. This is a population
+            average, not an individual measurement, but it is accurate within 10-15 bpm for most adults
+            and sufficient for practical training zone planning.
+          </p>
+
+          <table class="reference-table" aria-label="Heart rate training zones reference">
+            <thead>
+              <tr>
+                <th scope="col">Zone</th>
+                <th scope="col">% Max HR</th>
+                <th scope="col">Primary Adaptation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Zone 1 &mdash; Active Recovery</td>
+                <td>50&ndash;60%</td>
+                <td>Blood flow, active recovery, easy aerobic base</td>
+              </tr>
+              <tr>
+                <td>Zone 2 &mdash; Endurance</td>
+                <td>60&ndash;70%</td>
+                <td>Fat oxidation, aerobic base, mitochondrial density</td>
+              </tr>
+              <tr>
+                <td>Zone 3 &mdash; Aerobic</td>
+                <td>70&ndash;80%</td>
+                <td>Aerobic capacity, cardiovascular efficiency</td>
+              </tr>
+              <tr>
+                <td>Zone 4 &mdash; Threshold</td>
+                <td>80&ndash;90%</td>
+                <td>Lactate threshold, race-pace fitness</td>
+              </tr>
+              <tr>
+                <td>Zone 5 &mdash; VO2 Max</td>
+                <td>90&ndash;100%</td>
+                <td>Maximum oxygen uptake, speed, peak power</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p>
+            If you enter your resting heart rate, the calculator also outputs Karvonen zones. The Karvonen
+            method uses heart rate reserve (HRR), which is the difference between your max HR and resting
+            HR, to produce ranges that reflect your individual cardiovascular fitness level rather than a
+            population average. A trained endurance athlete with a resting HR of 45 bpm will have
+            meaningfully different zone boundaries than a sedentary person with a resting HR of 80 bpm,
+            even at the same age.
+          </p>
+          <p>Karvonen formula:</p>
+          <code>Target HR = ((Max HR &minus; Resting HR) &times; intensity%) + Resting HR</code>
+          <p>
+            Resting heart rate is best measured first thing in the morning before getting out of bed.
+            Take a 60-second count at your wrist or neck after lying still for 1-2 minutes. Averaging
+            three consecutive mornings eliminates day-to-day variation. If you wear a fitness tracker,
+            the overnight average displayed in your health app is a reliable substitute.
           </p>
 
         </div>

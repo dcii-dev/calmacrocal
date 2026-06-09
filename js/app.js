@@ -136,6 +136,32 @@
       if (imperialWeight) imperialWeight.hidden = false;
       if (imperialHeight) imperialHeight.hidden = false;
     }
+
+    // Sync navy measurement field visibility with the active unit system
+    const isFemale =
+      document.querySelector('[name="sex"]:checked')?.value === "female";
+    const navyNeckImp = document.getElementById("navy-neck-imperial");
+    const navyNeckMet = document.getElementById("navy-neck-metric");
+    const navyWaistImp = document.getElementById("navy-waist-imperial");
+    const navyWaistMet = document.getElementById("navy-waist-metric");
+    const navyHipImp = document.getElementById("navy-hip-imperial");
+    const navyHipMet = document.getElementById("navy-hip-metric");
+
+    if (unit === "metric") {
+      if (navyNeckImp) navyNeckImp.hidden = true;
+      if (navyWaistImp) navyWaistImp.hidden = true;
+      if (navyHipImp) navyHipImp.hidden = true;
+      if (navyNeckMet) navyNeckMet.hidden = false;
+      if (navyWaistMet) navyWaistMet.hidden = false;
+      if (navyHipMet) navyHipMet.hidden = !isFemale;
+    } else {
+      if (navyNeckMet) navyNeckMet.hidden = true;
+      if (navyWaistMet) navyWaistMet.hidden = true;
+      if (navyHipMet) navyHipMet.hidden = true;
+      if (navyNeckImp) navyNeckImp.hidden = false;
+      if (navyWaistImp) navyWaistImp.hidden = false;
+      if (navyHipImp) navyHipImp.hidden = !isFemale;
+    }
   }
 
   /**
@@ -237,6 +263,125 @@
   }
 
   /* ================================
+     NAVY METHOD BODY FAT
+     ================================ */
+
+  /**
+   * Estimates body fat % using the U.S. Navy circumference method.
+   * All inputs are in cm; internally converted to inches for the formula.
+   * @param {string} sex - "male" or "female".
+   * @param {number} heightCm
+   * @param {number} neckCm - Circumference at narrowest point.
+   * @param {number} waistCm - Narrowest point (male) or navel (female).
+   * @param {number} hipCm - Required for female; ignored for male.
+   * @return {number|null} Body fat percentage, or null if inputs are invalid.
+   */
+  function navyBodyFat(sex, heightCm, neckCm, waistCm, hipCm) {
+    const heightIn = heightCm / 2.54;
+    const neckIn = neckCm / 2.54;
+    const waistIn = waistCm / 2.54;
+
+    if (sex === "male") {
+      const diff = waistIn - neckIn;
+      if (diff <= 0 || heightIn <= 0) return null;
+      const bf =
+        495 /
+          (1.0324 -
+            0.19077 * Math.log10(diff) +
+            0.15456 * Math.log10(heightIn)) -
+        450;
+      return Math.max(3, Math.min(70, parseFloat(bf.toFixed(1))));
+    }
+
+    const hipIn = hipCm / 2.54;
+    const sum = waistIn + hipIn - neckIn;
+    if (sum <= 0 || heightIn <= 0) return null;
+    const bf =
+      495 /
+        (1.29579 - 0.35004 * Math.log10(sum) + 0.221 * Math.log10(heightIn)) -
+      450;
+    return Math.max(3, Math.min(70, parseFloat(bf.toFixed(1))));
+  }
+
+  /* ================================
+     HEART RATE ZONES
+     ================================ */
+
+  /** Zone definitions: percentage boundaries of max HR. */
+  const HR_ZONES = [
+    { id: 1, label: "Active Recovery", min: 0.5, max: 0.6 },
+    { id: 2, label: "Endurance / Fat Burn", min: 0.6, max: 0.7 },
+    { id: 3, label: "Aerobic", min: 0.7, max: 0.8 },
+    { id: 4, label: "Lactate Threshold", min: 0.8, max: 0.9 },
+    { id: 5, label: "VO2 Max", min: 0.9, max: 1.0 },
+  ];
+
+  /**
+   * Computes heart rate zone ranges using both the simple and Karvonen methods.
+   * @param {number} age
+   * @param {number} restingHr - 0 if not provided (skips Karvonen).
+   * @return {{ maxHr: number, zones: Array }}
+   */
+  function calcHrZones(age, restingHr) {
+    const maxHr = 220 - age;
+    const hasResting = restingHr > 0;
+    const hrr = hasResting ? maxHr - restingHr : 0;
+
+    const zones = HR_ZONES.map((z) => {
+      const simple = {
+        min: Math.round(maxHr * z.min),
+        max: Math.round(maxHr * z.max),
+      };
+      const karvonen = hasResting
+        ? {
+            min: Math.round(hrr * z.min + restingHr),
+            max: Math.round(hrr * z.max + restingHr),
+          }
+        : null;
+      return { id: z.id, simple, karvonen };
+    });
+
+    return { maxHr, zones };
+  }
+
+  /**
+   * Updates the HR zones panel in the DOM.
+   * @param {number} age
+   * @param {number} restingHr - 0 if not entered.
+   */
+  function updateHrZones(age, restingHr) {
+    const { maxHr, zones } = calcHrZones(age, restingHr);
+    const hasResting = restingHr > 0;
+
+    setText("hr-max-display", String(maxHr));
+
+    const container = document.getElementById("hr-zones-container");
+    if (container) {
+      if (hasResting) {
+        container.classList.add("hr-zones--karvonen");
+      } else {
+        container.classList.remove("hr-zones--karvonen");
+      }
+    }
+
+    const karvonenNote = document.getElementById("hr-karvonen-note");
+    const karvonenCol = document.getElementById("hr-karvonen-col");
+    if (karvonenNote) karvonenNote.hidden = !hasResting;
+    if (karvonenCol) karvonenCol.hidden = !hasResting;
+
+    zones.forEach((z) => {
+      setText(`hz${z.id}-simple`, `${z.simple.min}-${z.simple.max} bpm`);
+      const kEl = document.getElementById(`hz${z.id}-karvonen`);
+      if (kEl) {
+        kEl.hidden = !hasResting;
+        if (hasResting && z.karvonen) {
+          kEl.textContent = `${z.karvonen.min}-${z.karvonen.max} bpm`;
+        }
+      }
+    });
+  }
+
+  /* ================================
      INPUT PARSING
      ================================ */
 
@@ -278,10 +423,16 @@
     const discipline =
       document.getElementById("discipline")?.value || "general";
 
-    // Optional body fat % â€” enables Katch-McArdle when entered
+    // Optional body fat % — enables Katch-McArdle when entered
     const bfEl = document.getElementById("body-fat");
     const bfRaw = bfEl ? parseFloat(bfEl.value) : NaN;
     const bodyFatPct = !isNaN(bfRaw) && bfRaw >= 3 && bfRaw <= 70 ? bfRaw : 0;
+
+    // Optional resting heart rate — enables Karvonen HR zones when entered
+    const hrEl = document.getElementById("resting-hr");
+    const hrRaw = hrEl ? parseFloat(hrEl.value) : NaN;
+    const restingHr =
+      !isNaN(hrRaw) && hrRaw >= 30 && hrRaw <= 120 ? Math.round(hrRaw) : 0;
 
     // Meals per day
     const mealsPerDay = parseInt(
@@ -320,6 +471,7 @@
       weightKg,
       heightCm,
       bodyFatPct,
+      restingHr,
       activity,
       discipline,
       goalWeightKg,
@@ -712,6 +864,9 @@
     // Donut chart (training day split)
     drawMacroChart(result.proteinPct, result.carbsPct, result.fatPct);
 
+    // Heart rate training zones
+    updateHrZones(inputs.age, inputs.restingHr);
+
     // Protein per lb bodyweight
     const weightLbs = inputs.weightKg * 2.20462;
     const perLbEl = document.getElementById("result-protein-per-lb");
@@ -791,6 +946,32 @@
       });
   }
 
+  /**
+   * Returns an average resting heart rate estimate based on age.
+   * Based on published population averages for healthy sedentary adults.
+   * @param {number} age
+   * @return {number}
+   */
+  function suggestedRhr(age) {
+    if (age <= 25) return 72;
+    if (age <= 35) return 73;
+    if (age <= 45) return 75;
+    if (age <= 55) return 76;
+    if (age <= 65) return 77;
+    return 76;
+  }
+
+  /**
+   * Updates the resting HR input placeholder to reflect the age-based average.
+   */
+  function updateRhrPlaceholder() {
+    const ageEl = document.getElementById("age");
+    const hrEl = document.getElementById("resting-hr");
+    if (!ageEl || !hrEl) return;
+    const age = parseFloat(ageEl.value) || 30;
+    hrEl.placeholder = `e.g. ${suggestedRhr(age)} (avg for age ${Math.round(age)})`;
+  }
+
   /* ================================
      INITIALIZATION
      ================================ */
@@ -808,7 +989,10 @@
 
     const form = document.getElementById("macro-form");
     if (form) {
-      form.addEventListener("input", updateOutput);
+      form.addEventListener("input", (e) => {
+        if (e.target.id === "age") updateRhrPlaceholder();
+        updateOutput();
+      });
     }
 
     const unitInputs = document.querySelectorAll('[name="unit"]');
@@ -828,6 +1012,97 @@
     if (footerYear) {
       footerYear.textContent = String(new Date().getFullYear());
     }
+
+    // Set initial resting HR placeholder based on default age
+    updateRhrPlaceholder();
+
+    // Navy Method body fat calculator
+    const navyBtn = document.getElementById("navy-calc-btn");
+    if (navyBtn) {
+      navyBtn.addEventListener("click", () => {
+        const sex =
+          document.querySelector('[name="sex"]:checked')?.value || "male";
+        const unit =
+          document.querySelector('[name="unit"]:checked')?.value || "imperial";
+
+        let heightCm;
+        let neckCm;
+        let waistCm;
+        let hipCm = 0;
+
+        if (unit === "imperial") {
+          const ft =
+            parseFloat(document.getElementById("height-ft")?.value) || 0;
+          const inch =
+            parseFloat(document.getElementById("height-in")?.value) || 0;
+          heightCm = (ft * 12 + inch) * 2.54;
+          neckCm =
+            (parseFloat(document.getElementById("navy-neck-in")?.value) || 0) *
+            2.54;
+          waistCm =
+            (parseFloat(document.getElementById("navy-waist-in")?.value) || 0) *
+            2.54;
+          hipCm =
+            (parseFloat(document.getElementById("navy-hip-in")?.value) || 0) *
+            2.54;
+        } else {
+          heightCm =
+            parseFloat(document.getElementById("height-cm")?.value) || 0;
+          neckCm =
+            parseFloat(document.getElementById("navy-neck-cm")?.value) || 0;
+          waistCm =
+            parseFloat(document.getElementById("navy-waist-cm")?.value) || 0;
+          hipCm =
+            parseFloat(document.getElementById("navy-hip-cm")?.value) || 0;
+        }
+
+        const bf = navyBodyFat(sex, heightCm, neckCm, waistCm, hipCm);
+        const resultEl = document.getElementById("navy-calc-result");
+        const bfInput = document.getElementById("body-fat");
+
+        if (bf === null) {
+          if (resultEl) {
+            resultEl.hidden = false;
+            resultEl.textContent =
+              sex === "male"
+                ? "Check measurements. Waist must be greater than neck."
+                : "Check measurements. All three fields are required for female.";
+            resultEl.className = "navy-calc__result navy-calc__result--error";
+          }
+          return;
+        }
+
+        if (bfInput) {
+          bfInput.value = String(bf);
+        }
+        if (resultEl) {
+          resultEl.hidden = false;
+          resultEl.textContent = `Estimated: ${bf}% \u2014 applied to Body Fat % above.`;
+          resultEl.className = "navy-calc__result navy-calc__result--success";
+        }
+        updateOutput();
+      });
+    }
+
+    // Show/hide hip measurement fields when sex changes
+    const sexInputs = document.querySelectorAll('[name="sex"]');
+    sexInputs.forEach((input) => {
+      input.addEventListener("change", () => {
+        const unit =
+          document.querySelector('[name="unit"]:checked')?.value || "imperial";
+        const isFemale =
+          document.querySelector('[name="sex"]:checked')?.value === "female";
+        const navyHipImp = document.getElementById("navy-hip-imperial");
+        const navyHipMet = document.getElementById("navy-hip-metric");
+        if (unit === "imperial") {
+          if (navyHipImp) navyHipImp.hidden = !isFemale;
+          if (navyHipMet) navyHipMet.hidden = true;
+        } else {
+          if (navyHipImp) navyHipImp.hidden = true;
+          if (navyHipMet) navyHipMet.hidden = !isFemale;
+        }
+      });
+    });
 
     updateOutput();
   }
