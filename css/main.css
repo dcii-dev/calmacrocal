@@ -920,6 +920,148 @@ code {
 }
 
 /* ================================
+   MACRO CHART
+   ================================ */
+.chart-panel {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.chart-panel__canvas {
+  flex-shrink: 0;
+}
+
+.chart-panel__legend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.chart-panel__legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.chart-panel__legend-dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.chart-panel__legend-dot--protein {
+  background-color: var(--clr-protein);
+}
+
+.chart-panel__legend-dot--carbs {
+  background-color: var(--clr-carbs);
+}
+
+.chart-panel__legend-dot--fat {
+  background-color: var(--clr-fat);
+}
+
+.chart-panel__legend-label {
+  font-size: 0.875rem;
+  color: var(--clr-text-muted);
+}
+
+/* ================================
+   PROTEIN PER LB
+   ================================ */
+.macro-card__per-lb {
+  font-size: 0.75rem;
+  color: var(--clr-text-muted);
+  margin-top: 0.125rem;
+}
+
+/* ================================
+   COMPARE TABLE
+   ================================ */
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  font-size: 0.875rem;
+}
+
+.compare-table th,
+.compare-table td {
+  padding: 0.625rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--clr-border);
+}
+
+.compare-table thead th {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--clr-text-muted);
+}
+
+.compare-table__col--rest {
+  color: var(--clr-tdee);
+}
+
+.compare-table__macro {
+  font-weight: 600;
+}
+
+.compare-table__macro--protein {
+  color: var(--clr-protein);
+}
+
+.compare-table__macro--carbs {
+  color: var(--clr-carbs);
+}
+
+.compare-table__macro--fat {
+  color: var(--clr-fat);
+}
+
+.compare-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ================================
+   SHARE BUTTON
+   ================================ */
+.share-btn {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 1rem;
+  margin-left: 0.75rem;
+  padding: 0.625rem 1.25rem;
+  background-color: transparent;
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--clr-text-muted);
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.share-btn:hover {
+  border-color: #1d9bf0;
+  color: #1d9bf0;
+  background-color: var(--clr-bg-alt);
+}
+
+.share-btn:focus-visible {
+  outline: 3px solid #1d9bf0;
+  outline-offset: 3px;
+}
+
+/* ================================
    FORM GROUP OPTIONAL LABEL
    ================================ */
 .form-group__optional {

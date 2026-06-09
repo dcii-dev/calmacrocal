@@ -556,6 +556,68 @@
   }
 
   /**
+   * Draws a donut chart on the macro-chart canvas for training day macros.
+   * Reads CSS custom properties for colors so it respects light/dark theme.
+   * @param {number} proteinPct - Protein percentage of calories (0-100).
+   * @param {number} carbsPct - Carbs percentage of calories (0-100).
+   * @param {number} fatPct - Fat percentage of calories (0-100).
+   */
+  function drawMacroChart(proteinPct, carbsPct, fatPct) {
+    const canvas = document.getElementById("macro-chart");
+    if (!canvas || !canvas.getContext) return;
+    const ctx = canvas.getContext("2d");
+    const dpr = window.devicePixelRatio || 1;
+    const cssSize = 140;
+
+    canvas.width = cssSize * dpr;
+    canvas.height = cssSize * dpr;
+    canvas.style.width = `${cssSize}px`;
+    canvas.style.height = `${cssSize}px`;
+    ctx.scale(dpr, dpr);
+
+    const style = getComputedStyle(document.documentElement);
+    const colors = [
+      style.getPropertyValue("--clr-protein").trim() || "#3b82f6",
+      style.getPropertyValue("--clr-carbs").trim() || "#d97706",
+      style.getPropertyValue("--clr-fat").trim() || "#059669",
+    ];
+    const surfaceColor =
+      style.getPropertyValue("--clr-surface").trim() || "#f8fafc";
+
+    const cx = cssSize / 2;
+    const cy = cssSize / 2;
+    const outerR = cx - 6;
+    const innerR = outerR * 0.56;
+    const pcts = [proteinPct / 100, carbsPct / 100, fatPct / 100];
+
+    ctx.clearRect(0, 0, cssSize, cssSize);
+
+    let startAngle = -Math.PI / 2;
+    pcts.forEach((pct, i) => {
+      if (pct <= 0) return;
+      const endAngle = startAngle + pct * 2 * Math.PI;
+      ctx.beginPath();
+      ctx.arc(cx, cy, outerR, startAngle, endAngle);
+      ctx.arc(cx, cy, innerR, endAngle, startAngle, true);
+      ctx.closePath();
+      ctx.fillStyle = colors[i];
+      ctx.fill();
+      startAngle = endAngle;
+    });
+
+    // Donut hole fill
+    ctx.beginPath();
+    ctx.arc(cx, cy, innerR - 1, 0, 2 * Math.PI);
+    ctx.fillStyle = surfaceColor;
+    ctx.fill();
+
+    // Update legend text
+    setText("chart-legend-protein", `Protein ${proteinPct}%`);
+    setText("chart-legend-carbs", `Carbs ${carbsPct}%`);
+    setText("chart-legend-fat", `Fat ${fatPct}%`);
+  }
+
+  /**
    * Reads all inputs, runs the calculation, and updates every output element.
    */
   function updateOutput() {
@@ -646,6 +708,36 @@
     setText("bd-tdee", `${formatCals(result.tdee)} kcal`);
     setText("bd-discipline", formatAdjust(result.calorieAdjust));
     setText("bd-target", `${formatCals(result.targetCals)} kcal`);
+
+    // Donut chart (training day split)
+    drawMacroChart(result.proteinPct, result.carbsPct, result.fatPct);
+
+    // Protein per lb bodyweight
+    const weightLbs = inputs.weightKg * 2.20462;
+    const perLbEl = document.getElementById("result-protein-per-lb");
+    if (perLbEl) {
+      perLbEl.textContent = `~${(result.proteinG / weightLbs).toFixed(1)}g per lb`;
+    }
+
+    // Comparison table
+    setText("cmp-train-protein", `${result.proteinG}g`);
+    setText("cmp-train-carbs", `${result.carbsG}g`);
+    setText("cmp-train-fat", `${result.fatG}g`);
+    setText("cmp-rest-protein", `${result.restProteinG}g`);
+    setText("cmp-rest-carbs", `${result.restCarbsG}g`);
+    setText("cmp-rest-fat", `${result.restFatG}g`);
+
+    // Share button URL
+    const shareBtn = document.getElementById("share-btn");
+    if (shareBtn) {
+      const tweetText = [
+        `My daily macros: ${formatCals(result.targetCals)} kcal`,
+        `Protein: ${result.proteinG}g | Carbs: ${result.carbsG}g | Fat: ${result.fatG}g`,
+        `Calculated with CalMacroCal`,
+        `calmacrocal.com`,
+      ].join("\n");
+      shareBtn.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
+    }
   }
 
   /* ================================
