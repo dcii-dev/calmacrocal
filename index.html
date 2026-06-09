@@ -35,6 +35,15 @@
       }
     })();
   </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VQXK6PKMCQ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-VQXK6PKMCQ');
+  </script>
 </head>
 
 <body>
@@ -48,7 +57,8 @@
       <a href="/" class="site-header__logo" aria-label="CalMacroCal home">
         <svg class="site-header__logo-icon" width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
           <!-- Circle background -->
-          <circle cx="14" cy="14" r="13.5" fill="currentColor" opacity="0.12" stroke="currentColor" stroke-width="1" opacity="0.3" />
+          <circle cx="14" cy="14" r="13.5" fill="currentColor" opacity="0.12" stroke="currentColor" stroke-width="1"
+            opacity="0.3" />
           <!-- Calculator body -->
           <rect x="8" y="6" width="12" height="16" rx="1.5" stroke="currentColor" stroke-width="1.4" />
           <!-- Display strip -->
@@ -103,8 +113,7 @@
             <!-- Unit Toggle -->
             <div class="unit-toggle" role="group" aria-label="Unit system">
               <label class="unit-toggle__option">
-                <input class="unit-toggle__input" type="radio" name="unit" id="unit-imperial" value="imperial"
-                  checked>
+                <input class="unit-toggle__input" type="radio" name="unit" id="unit-imperial" value="imperial" checked>
                 <span class="unit-toggle__label">Imperial</span>
               </label>
               <label class="unit-toggle__option">
@@ -185,8 +194,8 @@
               <div class="form-group" id="height-metric" hidden>
                 <label class="form-group__label form-group__label--required" for="height-cm">Height</label>
                 <div class="form-group__input-wrap">
-                  <input class="form-group__input" type="number" id="height-cm" value="178" min="100" max="250"
-                    step="1" aria-describedby="height-cm-hint">
+                  <input class="form-group__input" type="number" id="height-cm" value="178" min="100" max="250" step="1"
+                    aria-describedby="height-cm-hint">
                   <span class="form-group__suffix">cm</span>
                 </div>
                 <span class="form-group__hint" id="height-cm-hint">Your height in centimeters.</span>
@@ -194,13 +203,15 @@
 
               <!-- Body Fat % (optional) -->
               <div class="form-group">
-                <label class="form-group__label" for="body-fat">Body Fat % <span class="form-group__optional">(optional)</span></label>
+                <label class="form-group__label" for="body-fat">Body Fat % <span
+                    class="form-group__optional">(optional)</span></label>
                 <div class="form-group__input-wrap">
                   <input class="form-group__input" type="number" id="body-fat" min="3" max="70" step="0.5"
                     placeholder="e.g. 18" aria-describedby="body-fat-hint">
                   <span class="form-group__suffix">%</span>
                 </div>
-                <span class="form-group__hint" id="body-fat-hint">Optional. Enables the Katch-McArdle formula for a more precise BMR.</span>
+                <span class="form-group__hint" id="body-fat-hint">Optional. Enables the Katch-McArdle formula for a more
+                  precise BMR.</span>
               </div>
 
             </div>
@@ -255,21 +266,24 @@
 
               <!-- Goal Weight (imperial) -->
               <div class="form-group" id="goal-weight-imperial">
-                <label class="form-group__label" for="goal-weight-lbs">Goal Weight <span class="form-group__optional">(optional)</span></label>
+                <label class="form-group__label" for="goal-weight-lbs">Goal Weight <span
+                    class="form-group__optional">(optional)</span></label>
                 <div class="form-group__input-wrap">
-                  <input class="form-group__input" type="number" id="goal-weight-lbs" min="50" max="1000"
-                    step="1" placeholder="e.g. 155" aria-describedby="goal-weight-hint">
+                  <input class="form-group__input" type="number" id="goal-weight-lbs" min="50" max="1000" step="1"
+                    placeholder="e.g. 155" aria-describedby="goal-weight-hint">
                   <span class="form-group__suffix">lbs</span>
                 </div>
-                <span class="form-group__hint" id="goal-weight-hint">Shows your estimated timeline to reach this weight.</span>
+                <span class="form-group__hint" id="goal-weight-hint">Shows your estimated timeline to reach this
+                  weight.</span>
               </div>
 
               <!-- Goal Weight (metric, hidden by default) -->
               <div class="form-group" id="goal-weight-metric" hidden>
-                <label class="form-group__label" for="goal-weight-kg">Goal Weight <span class="form-group__optional">(optional)</span></label>
+                <label class="form-group__label" for="goal-weight-kg">Goal Weight <span
+                    class="form-group__optional">(optional)</span></label>
                 <div class="form-group__input-wrap">
-                  <input class="form-group__input" type="number" id="goal-weight-kg" min="20" max="450"
-                    step="1" placeholder="e.g. 70">
+                  <input class="form-group__input" type="number" id="goal-weight-kg" min="20" max="450" step="1"
+                    placeholder="e.g. 70">
                   <span class="form-group__suffix">kg</span>
                 </div>
               </div>
