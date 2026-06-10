@@ -905,6 +905,9 @@
   function copyResults() {
     const inputs = getInputs();
     const result = calculate(inputs);
+    const { maxHr, zones } = calcHrZones(inputs.age, inputs.restingHr);
+    const hasResting = inputs.restingHr > 0;
+
     const lines = [
       "CalMacroCal Results",
       `Daily Target: ${formatCals(result.targetCals)} kcal`,
@@ -928,6 +931,34 @@
       `Fiber Target: ${result.fiberG}g/day`,
       `Water Target: ${result.waterOz} oz / ${result.waterL} L`,
     ];
+
+    if (inputs.bodyFatPct > 0) {
+      lines.push("");
+      lines.push(`Body Fat %:   ${inputs.bodyFatPct}% (BMR via ${result.formulaUsed})`);
+    }
+
+    lines.push("");
+    lines.push(
+      `Heart Rate Zones (Max HR: ${maxHr} bpm${hasResting ? `, Resting HR: ${inputs.restingHr} bpm` : ""})`,
+    );
+
+    const zoneNames = [
+      "Zone 1 Active Recovery",
+      "Zone 2 Endurance      ",
+      "Zone 3 Aerobic        ",
+      "Zone 4 Threshold      ",
+      "Zone 5 VO2 Max        ",
+    ];
+
+    zones.forEach((z, i) => {
+      const simple = `${z.simple.min}-${z.simple.max} bpm`;
+      if (hasResting && z.karvonen) {
+        const karvonen = `${z.karvonen.min}-${z.karvonen.max} bpm`;
+        lines.push(`  ${zoneNames[i]}  Simple: ${simple}  Karvonen: ${karvonen}`);
+      } else {
+        lines.push(`  ${zoneNames[i]}  ${simple}`);
+      }
+    });
 
     const btn = document.getElementById("copy-btn");
     navigator.clipboard
