@@ -934,7 +934,9 @@
 
     if (inputs.bodyFatPct > 0) {
       lines.push("");
-      lines.push(`Body Fat %:   ${inputs.bodyFatPct}% (BMR via ${result.formulaUsed})`);
+      lines.push(
+        `Body Fat %:   ${inputs.bodyFatPct}% (BMR via ${result.formulaUsed})`,
+      );
     }
 
     lines.push("");
@@ -954,7 +956,9 @@
       const simple = `${z.simple.min}-${z.simple.max} bpm`;
       if (hasResting && z.karvonen) {
         const karvonen = `${z.karvonen.min}-${z.karvonen.max} bpm`;
-        lines.push(`  ${zoneNames[i]}  Simple: ${simple}  Karvonen: ${karvonen}`);
+        lines.push(
+          `  ${zoneNames[i]}  Simple: ${simple}  Karvonen: ${karvonen}`,
+        );
       } else {
         lines.push(`  ${zoneNames[i]}  ${simple}`);
       }
