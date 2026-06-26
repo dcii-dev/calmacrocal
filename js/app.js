@@ -267,12 +267,13 @@
      ================================ */
 
   /**
-   * Estimates body fat % using the U.S. Navy circumference method.
+   * Estimates body fat % using the U.S. Navy circumference method
+   * (Hodgdon & Beckett linear regression formula).
    * All inputs are in cm; internally converted to inches for the formula.
    * @param {string} sex - "male" or "female".
    * @param {number} heightCm
    * @param {number} neckCm - Circumference at narrowest point.
-   * @param {number} waistCm - Narrowest point (male) or navel (female).
+   * @param {number} waistCm - At navel (male) or narrowest point (female).
    * @param {number} hipCm - Required for female; ignored for male.
    * @return {number|null} Body fat percentage, or null if inputs are invalid.
    */
@@ -285,11 +286,7 @@
       const diff = waistIn - neckIn;
       if (diff <= 0 || heightIn <= 0) return null;
       const bf =
-        495 /
-          (1.0324 -
-            0.19077 * Math.log10(diff) +
-            0.15456 * Math.log10(heightIn)) -
-        450;
+        86.01 * Math.log10(diff) - 70.041 * Math.log10(heightIn) + 36.76;
       return Math.max(3, Math.min(70, parseFloat(bf.toFixed(1))));
     }
 
@@ -297,9 +294,7 @@
     const sum = waistIn + hipIn - neckIn;
     if (sum <= 0 || heightIn <= 0) return null;
     const bf =
-      495 /
-        (1.29579 - 0.35004 * Math.log10(sum) + 0.221 * Math.log10(heightIn)) -
-      450;
+      163.205 * Math.log10(sum) - 97.684 * Math.log10(heightIn) - 78.387;
     return Math.max(3, Math.min(70, parseFloat(bf.toFixed(1))));
   }
 
