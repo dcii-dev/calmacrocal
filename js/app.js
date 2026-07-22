@@ -6,6 +6,33 @@
      ================================ */
 
   const STORAGE_KEY = "calmarcocal-theme";
+  const FORM_STORAGE_KEY = "calmacrocal-inputs";
+
+  /** Ids of value-bearing inputs/selects persisted to localStorage. */
+  const PERSISTED_IDS = [
+    "age",
+    "weight-lbs",
+    "weight-kg",
+    "height-ft",
+    "height-in",
+    "height-cm",
+    "body-fat",
+    "resting-hr",
+    "activity",
+    "discipline",
+    "meals-per-day",
+    "goal-weight-lbs",
+    "goal-weight-kg",
+    "navy-neck-in",
+    "navy-neck-cm",
+    "navy-waist-in",
+    "navy-waist-cm",
+    "navy-hip-in",
+    "navy-hip-cm",
+  ];
+
+  /** Radio group names persisted to localStorage. */
+  const PERSISTED_RADIOS = ["sex", "unit"];
 
   /** @type {Record<string, number>} */
   const ACTIVITY_MULTIPLIERS = {
@@ -112,8 +139,10 @@
    * Shows the inputs matching the selected unit system and hides the others.
    * Converts existing values so data is preserved across unit switches.
    * @param {string} unit - Either "imperial" or "metric".
+   * @param {boolean} [convert=true] - Convert existing values across units.
+   *   Pass false when restoring persisted values to avoid clobbering them.
    */
-  function applyUnitSystem(unit) {
+  function applyUnitSystem(unit, convert = true) {
     const imperialWeight = document.getElementById("weight-imperial");
     const metricWeight = document.getElementById("weight-metric");
     const imperialHeight = document.getElementById("height-imperial");
@@ -122,7 +151,7 @@
     const goalMet = document.getElementById("goal-weight-metric");
 
     if (unit === "metric") {
-      convertToMetric();
+      if (convert) convertToMetric();
       if (imperialWeight) imperialWeight.hidden = true;
       if (imperialHeight) imperialHeight.hidden = true;
       if (goalImp) goalImp.hidden = true;
@@ -130,7 +159,7 @@
       if (metricHeight) metricHeight.hidden = false;
       if (goalMet) goalMet.hidden = false;
     } else {
-      convertToImperial();
+      if (convert) convertToImperial();
       if (metricWeight) metricWeight.hidden = true;
       if (metricHeight) metricHeight.hidden = true;
       if (imperialWeight) imperialWeight.hidden = false;
@@ -1003,6 +1032,57 @@
   }
 
   /* ================================
+     INPUT PERSISTENCE
+     ================================ */
+
+  /**
+   * Serializes all persisted inputs and radios to localStorage.
+   */
+  function saveInputs() {
+    const data = {};
+    PERSISTED_IDS.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) data[id] = el.value;
+    });
+    PERSISTED_RADIOS.forEach((name) => {
+      const checked = document.querySelector(`[name="${name}"]:checked`);
+      if (checked) data[name] = checked.value;
+    });
+    try {
+      localStorage.setItem(FORM_STORAGE_KEY, JSON.stringify(data));
+    } catch (e) {
+      // Storage unavailable (private mode / quota); skip persistence.
+    }
+  }
+
+  /**
+   * Restores persisted inputs and radios from localStorage, if present.
+   */
+  function restoreInputs() {
+    let data = null;
+    try {
+      data = JSON.parse(localStorage.getItem(FORM_STORAGE_KEY) || "null");
+    } catch (e) {
+      data = null;
+    }
+    if (!data || typeof data !== "object") return;
+
+    PERSISTED_IDS.forEach((id) => {
+      if (data[id] === undefined) return;
+      const el = document.getElementById(id);
+      if (el) el.value = data[id];
+    });
+
+    PERSISTED_RADIOS.forEach((name) => {
+      if (data[name] === undefined) return;
+      const el = document.querySelector(
+        `[name="${name}"][value="${data[name]}"]`,
+      );
+      if (el) el.checked = true;
+    });
+  }
+
+  /* ================================
      INITIALIZATION
      ================================ */
 
@@ -1011,6 +1091,7 @@
    */
   function initializeApp() {
     initializeTheme();
+    restoreInputs();
 
     const themeBtn = document.getElementById("theme-toggle");
     if (themeBtn) {
@@ -1022,6 +1103,7 @@
       form.addEventListener("input", (e) => {
         if (e.target.id === "age") updateRhrPlaceholder();
         updateOutput();
+        saveInputs();
       });
     }
 
@@ -1030,6 +1112,7 @@
       input.addEventListener("change", () => {
         applyUnitSystem(input.value);
         updateOutput();
+        saveInputs();
       });
     });
 
@@ -1111,6 +1194,7 @@
           resultEl.className = "navy-calc__result navy-calc__result--success";
         }
         updateOutput();
+        saveInputs();
       });
     }
 
@@ -1131,8 +1215,14 @@
           if (navyHipImp) navyHipImp.hidden = true;
           if (navyHipMet) navyHipMet.hidden = !isFemale;
         }
+        saveInputs();
       });
     });
+
+    // Sync field visibility to the restored (or default) unit system.
+    const activeUnit =
+      document.querySelector('[name="unit"]:checked')?.value || "imperial";
+    applyUnitSystem(activeUnit, false);
 
     updateOutput();
   }
