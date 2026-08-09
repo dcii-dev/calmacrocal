@@ -15,6 +15,7 @@
       }
       const items = await response.json();
       renderFAQ(container, items);
+      injectFaqSchema(items);
     } catch (error) {
       console.warn("FAQ could not be loaded.", error);
     }
@@ -46,6 +47,29 @@
     }
 
     container.appendChild(fragment);
+  }
+
+  /**
+   * Injects FAQPage JSON-LD schema into the document head.
+   * @param {Array<{question: string, answer: string}>} items
+   */
+  function injectFaqSchema(items) {
+    const schema = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: items.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: item.answer,
+        },
+      })),
+    };
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.textContent = JSON.stringify(schema);
+    document.head.appendChild(script);
   }
 
   if (document.readyState === "complete") {
